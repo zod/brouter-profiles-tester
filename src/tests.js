@@ -1,4 +1,4 @@
-var TESTS = {
+export var TESTS = {
     'Specific features': [
         {
             description: 'Prefer the slow traffic street without infrastructure but with cycle route (rue Amelot) rather than the large street without infrastructure (boulevard Beaumarchais). Another valid route would be Boulevard Richard Lenoir and Boulevard Voltaire which have cycle ways.',
