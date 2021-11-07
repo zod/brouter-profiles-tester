@@ -8,7 +8,7 @@
 	let reference_profile = "trekking";
 	let brouter_url = "http://brouter.de:7777";
 	let brouter_web_url = "http://brouter.de/brouter-web/";
-	let tile_url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+	let tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png";
 
 	let tests = TESTS;
 
@@ -103,9 +103,10 @@
 		let endPoint = testCase.end_point;
 		let map = L.map(container);
 		L.tileLayer(tile_url, {
-			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+			attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
 			minZoom: 0,
-			maxZoom: 19,
+			maxZoom: 20,
+			subdomains: 'abcd',
 		}).addTo(map)
 		map.fitBounds(L.latLngBounds(
 			L.latLng(Math.min(startPoint[1], endPoint[1]), Math.min(startPoint[0], endPoint[0])),
