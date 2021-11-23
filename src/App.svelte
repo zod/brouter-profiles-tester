@@ -1,5 +1,5 @@
 <script>
-  import { TESTS } from "./tests";
+  import TESTS from './tests.json'
   import _ from "lodash";
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
