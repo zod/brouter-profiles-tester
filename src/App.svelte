@@ -15,7 +15,9 @@
   let tile_url =
     "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png";
 
-  let testSuite = TESTS;
+  let testSuite = _.cloneDeep(TESTS);
+
+  let fileInput;
 
   let errorMessage = "";
   let statusMessage = "";
@@ -36,6 +38,41 @@
         testSuite = testSuiteResult;
       })
       .catch((error) => (errorMessage = error));
+  }
+
+  function importTests(event) {
+    let testCasesImport = event.target.files;
+    for (let i = 0, numFiles = testCasesImport.length; i < numFiles; i++) {
+      const file = testCasesImport[i];
+      file.text().then((json) => {
+        var geojson = JSON.parse(json);
+        var feature = geojson.features[0];
+        var name = feature.properties.name;
+        var start = feature.geometry.coordinates[0];
+        var end =
+          feature.geometry.coordinates[feature.geometry.coordinates.length - 1];
+        testSuite.push({
+          description: name,
+          start_point: start,
+          end_point: end,
+          human: geojson,
+        });
+        console.log(testSuite);
+        testSuite = testSuite;
+      });
+    }
+  }
+
+  function exportTests(event) {
+    event.target.href = URL.createObjectURL(
+      new Blob([JSON.stringify(testSuite, null, 2)], {
+        type: "application/json",
+      })
+    );
+  }
+
+  function resetTests() {
+    testSuite = _.cloneDeep(TESTS);
   }
 
   function brouterWebDebugUrl(testCase) {
@@ -106,7 +143,7 @@
     <div class="row">
       <div class="col-lg-4">
         <h2>Settings</h2>
-        <form id="settings" on:submit|preventDefault={runTests}>
+        <form id="settings">
           <div class="mb-3">
             <label for="profile" class="form-label">Profile content</label>
             <textarea
@@ -169,11 +206,40 @@
           {#if statusMessage}
             <p id="status">{statusMessage}</p>
           {/if}
-          <button class="btn btn-primary" type="submit">Run tests</button>
         </form>
       </div>
       <div class="col-lg-4">
         <h2>Tests</h2>
+        <div class="btn-group" role="toolbar" aria-label="Test actions">
+          <button type="button" class="btn btn-primary" on:click={runTests}
+            >Run</button
+          >
+          <button
+            type="button"
+            class="btn btn-secondary"
+            on:click={() => {
+              fileInput.click();
+            }}>Import</button
+          >
+          <input
+            bind:this={fileInput}
+            type="file"
+            style="display: none"
+            accept=".geojson"
+            multiple
+            on:change={importTests}
+          />
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <a
+            type="button"
+            class="btn btn-secondary"
+            download="tests.json"
+            on:click={exportTests}>Export</a
+          >
+          <button type="button" class="btn btn-secondary" on:click={resetTests}
+            >Reset</button
+          >
+        </div>
         <div class="summary">
           <ul>
             {#each testSuite as testCase, testCaseIndex}
