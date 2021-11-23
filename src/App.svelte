@@ -148,8 +148,6 @@
             <label for="profile" class="form-label">Profile content</label>
             <textarea
               class="form-control"
-              name="profile"
-              id="profile"
               bind:value={test_profile}
             />
           </div>
@@ -158,20 +156,12 @@
             <input
               type="text"
               class="form-control"
-              name="reference_profile"
-              id="reference-profile"
               bind:value={reference_profile}
             />
           </div>
           <div class="mb-3">
             <label for="brouter-url" class="form-label">BRouter URL</label>
-            <input
-              type="text"
-              class="form-control"
-              name="brouter_url"
-              id="brouter-url"
-              bind:value={brouter_url}
-            />
+            <input type="text" class="form-control" bind:value={brouter_url} />
             <div class="form-text">
               Use a BRouter instance which provides HTTPS if this site is served
               using HTTPS
@@ -184,20 +174,12 @@
             <input
               type="text"
               class="form-control"
-              name="brouter_web_url"
-              id="brouter-web-url"
               bind:value={brouter_web_url}
             />
           </div>
           <div class="mb-3">
             <label for="tile-url" class="form-label">Tile URL</label>
-            <input
-              type="text"
-              class="form-control"
-              name="tile_url"
-              id="tile-url"
-              bind:value={tile_url}
-            />
+            <input type="text" class="form-control" bind:value={tile_url} />
           </div>
 
           {#if errorMessage}
