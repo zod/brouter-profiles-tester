@@ -3,6 +3,8 @@
   import _ from "lodash";
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
+  import "bootstrap";
+  import "bootstrap/dist/css/bootstrap.min.css";
 
   let test_profile = "";
   let reference_profile = "trekking";
@@ -177,142 +179,150 @@
 </script>
 
 <main>
-  <h1 id="brouter-tester">BRouter profiles tester</h1>
-  <p>
-    Here are some test cases to check <a href="http://brouter.de/">BRouter</a> profiles
-    and help with development of new profiles.
-  </p>
-
-  <p>
-    <strong
-      >Important: beware that the map tiles used are the live map tiles (using
-      up to date OSM data) contrary to the BRouter <code>segments4</code> test files
-      which are using a fixed dump of OSM data. Then, the map background may come
-      out of sync with the data used by BRouter and are only there as an eyeguide.</strong
-    >
-  </p>
-
-  <p>
-    The map show the route computed with the selected profile (in blue), the
-    route computed by the reference profile (in grey) as well as a route
-    computed by a human (in green). Note that the human route is not necessarily
-    the best one or the unique valid solution.
-  </p>
-
-  <p>
-    The tests assume the BRouter instance uses <a
-      href="https://pub.phyks.me/brouter-testing/segments4/"
-      >these <code>segments4</code> files</a
-    >
-    which are built from the
-    <a href="https://download.geofabrik.de/">Geofabrik.de</a>
-    extracts of metropolitan France, New York state (US) and Sachsen state
-    (Germany) from the 10th of November, 2018. The <code>profiles2</code> folder
-    used to build the <code>segments4</code> files is available
-    <a href="https://pub.phyks.me/brouter-testing/profiles2/">here</a>
-    (including the <code>lookups.dat</code> file). The SRTM data used to build
-    the <code>segments4</code> are available
-    <a href="https://pub.phyks.me/brouter-testing/srtm/">here</a>.
-  </p>
-
-  <h2>Settings</h2>
-  <form id="settings" on:submit|preventDefault={runTests}>
-    <p>
-      <label for="profile">Profile content: </label>
-      <textarea name="profile" id="profile" bind:value={test_profile} />
-    </p>
-    <p>
-      <label for="reference-profile">Reference profile: </label>
-      <input
-        type="text"
-        name="reference_profile"
-        id="reference-profile"
-        bind:value={reference_profile}
-      />
-    </p>
-    <p>
-      <label for="brouter-url">BRouter URL: </label>
-      <input
-        type="text"
-        name="brouter_url"
-        id="brouter-url"
-        bind:value={brouter_url}
-      />
-      <span class="footnote"
-        >Your BRouter instance should provide <a
-          href="https://developer.mozilla.org/fr/docs/Web/HTTP/CORS">CORS</a
-        >
-        headers. Otherwise, you can use an extension such as
-        <a href="https://addons.mozilla.org/fr/firefox/addon/cors-everywhere/"
-          >CORS Everywhere</a
-        >.</span
-      >
-    </p>
-    <p>
-      <label for="brouter-web-url">BRouter web URL (for debug): </label>
-      <input
-        type="text"
-        name="brouter_web_url"
-        id="brouter-web-url"
-        bind:value={brouter_web_url}
-      />
-    </p>
-    <p>
-      <label for="tile-url">Tile URL: </label>
-      <input type="text" name="tile_url" id="tile-url" bind:value={tile_url} />
-    </p>
-
-    {#if errorMessage}
-      <p class="error" id="error">ERROR: {errorMessage}</p>
-    {/if}
-    {#if statusMessage}
-      <p id="status">{statusMessage}</p>
-    {/if}
-    <button class="center" type="submit">Run tests</button>
-  </form>
-
-  <h2>Summary</h2>
-  {#each Object.entries(tests) as [testCategory, testCases]}
-    <div class="summary">
-      <h3><a href="#{getTestCategoryId(testCategory)}">{testCategory}</a></h3>
-      <ul>
-        {#each testCases as testCase, testCaseIndex}
-          <li>
-            <a href="#{getTestCategoryId(testCategory) + testCaseIndex}"
-              >{testCase.description}</a
+  <div class="container-fluid">
+    <h1 id="brouter-tester" class="display-1">BRouter profiles tester</h1>
+    <div class="row">
+      <div class="col-lg-4">
+        <h2>Settings</h2>
+        <form id="settings" on:submit|preventDefault={runTests}>
+          <div class="mb-3">
+            <label for="profile" class="form-label">Profile content</label>
+            <textarea
+              class="form-control"
+              name="profile"
+              id="profile"
+              bind:value={test_profile}
+            />
+          </div>
+          <div class="mb-3">
+            <label for="reference-profile">Reference profile: </label>
+            <input
+              type="text"
+              class="form-control"
+              name="reference_profile"
+              id="reference-profile"
+              bind:value={reference_profile}
+            />
+          </div>
+          <div class="mb-3">
+            <label for="brouter-url" class="form-label">BRouter URL</label>
+            <input
+              type="text"
+              class="form-control"
+              name="brouter_url"
+              id="brouter-url"
+              bind:value={brouter_url}
+            />
+            <div class="form-text">
+              Use a BRouter instance which provides HTTPS if this site is served
+              using HTTPS
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="brouter-web-url" class="form-label"
+              >BRouter web URL (for debug)</label
             >
-          </li>
-        {/each}
-      </ul>
-    </div>
-  {/each}
+            <input
+              type="text"
+              class="form-control"
+              name="brouter_web_url"
+              id="brouter-web-url"
+              bind:value={brouter_web_url}
+            />
+          </div>
+          <div class="mb-3">
+            <label for="tile-url" class="form-label">Tile URL</label>
+            <input
+              type="text"
+              class="form-control"
+              name="tile_url"
+              id="tile-url"
+              bind:value={tile_url}
+            />
+          </div>
 
-  {#each Object.entries(tests) as [testCategory, testCases]}
-    <h2 id={getTestCategoryId(testCategory)}>{testCategory}</h2>
-    {#each testCases as testCase, testCaseIndex}
-      <div class="testcase">
-        <p
-          class="description"
-          id={getTestCategoryId(testCategory) + testCaseIndex}
-        >
-          {testCase.description}
-        </p>
-        {#if testCase.errorMsg}
-          <p class="error">ERROR: {testCase.errorMsg}</p>
-        {/if}
-        <div class="map" use:mapAction={testCase} />
-        <div class="footer">
-          <p class="debug">
-            <a href={brouter_web_debug_url(testCase)} target="_blank"
-              >Debug this test case</a
-            >
-          </p>
-          <p class="back-top"><a href="#brouter-tester">Back to top ↑</a></p>
-        </div>
+          {#if errorMessage}
+            <p class="error" id="error">ERROR: {errorMessage}</p>
+          {/if}
+          {#if statusMessage}
+            <p id="status">{statusMessage}</p>
+          {/if}
+          <button class="btn btn-primary" type="submit">Run tests</button>
+        </form>
       </div>
-    {/each}
-  {/each}
+      <div class="col-lg-4">
+        <h2>Tests</h2>
+        {#each Object.entries(tests) as [testCategory, testCases]}
+          <div class="summary">
+            <h3>
+              <a href="#{getTestCategoryId(testCategory)}">{testCategory}</a>
+            </h3>
+            <ul>
+              {#each testCases as testCase, testCaseIndex}
+                <li>
+                  <a href="#{getTestCategoryId(testCategory) + testCaseIndex}"
+                    >{testCase.description}</a
+                  >
+                </li>
+              {/each}
+            </ul>
+          </div>
+        {/each}
+      </div>
+      <div class="col-lg-4">
+        <h2>Results</h2>
+        {#each Object.entries(tests) as [testCategory, testCases]}
+          <h3 id={getTestCategoryId(testCategory)}>{testCategory}</h3>
+          {#each testCases as testCase, testCaseIndex}
+            <div class="testcase">
+              <p
+                class="description"
+                id={getTestCategoryId(testCategory) + testCaseIndex}
+              >
+                {testCase.description}
+              </p>
+              {#if testCase.errorMsg}
+                <p class="error">ERROR: {testCase.errorMsg}</p>
+              {/if}
+              <div class="map" use:mapAction={testCase} />
+              <div class="footer">
+                <p class="debug">
+                  <a href={brouter_web_debug_url(testCase)} target="_blank"
+                    >Debug this test case</a
+                  >
+                </p>
+                <p class="back-top">
+                  <a href="#brouter-tester">Back to top ↑</a>
+                </p>
+              </div>
+            </div>
+          {/each}
+        {/each}
+      </div>
+    </div>
+  </div>
 </main>
 
 <style>
+  textarea {
+    min-height: 300px;
+  }
+  .map {
+    height: 300px;
+  }
+
+  .footer {
+    font-size: 0.8em;
+    display: flex;
+  }
+
+  .debug {
+    flex: auto;
+    text-align: left;
+  }
+
+  .back-top {
+    flex: auto;
+    text-align: right;
+  }
 </style>
