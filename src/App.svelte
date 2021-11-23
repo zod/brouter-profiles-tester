@@ -1,5 +1,7 @@
 <script>
-  import TESTS from './tests.json'
+  import { runTestSuite } from "./test-runner";
+  import TESTS from "./tests.json";
+
   import _ from "lodash";
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
@@ -12,32 +14,30 @@
   let brouter_web_url = "http://brouter.de/brouter-web/";
   let tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png";
 
-  let tests = TESTS;
+  let testSuite = TESTS;
 
   let errorMessage = "";
   let statusMessage = "";
 
-  function getTestCategoryId(testCategory) {
-    return testCategory.replace(/[^a-zA-Z]/g, "");
+  function runTests() {
+    errorMessage = "";
+
+    let testConfig = {
+      brouterUri: brouter_url,
+      profiles: {
+        expected: reference_profile,
+        actual: test_profile,
+      },
+    };
+
+    runTestSuite(testSuite, testConfig)
+      .then((testSuiteResult) => {
+        testSuite = testSuiteResult;
+      })
+      .catch((error) => (errorMessage = error));
   }
 
-  function brouter_request_url(startPoint, endPoint, profile) {
-    return (
-      brouter_url +
-      "/brouter?" +
-      "lonlats=" +
-      startPoint.join(",") +
-      "|" +
-      endPoint.join(",") +
-      "&" +
-      "profile=" +
-      profile +
-      "&" +
-      "alternativeidx=0&format=geojson"
-    );
-  }
-
-  function brouter_web_debug_url(testCase) {
+  function brouterWebDebugUrl(testCase) {
     return (
       brouter_web_url +
       "/#map=15/" +
@@ -53,85 +53,6 @@
       "profile=" +
       reference_profile
     );
-  }
-
-  async function runTests() {
-    errorMessage = "";
-    statusMessage = "Running tests";
-    let test_profile_id;
-    await fetch(brouter_url + "/brouter/profile", {
-      method: "POST",
-      mode: "cors",
-      body: test_profile,
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        if (response["error"]) {
-          throw response["error"];
-        }
-        test_profile_id = response["profileid"];
-      })
-      .catch((error) => {
-        statusMessage = "";
-        errorMessage = error;
-      });
-
-    if (!test_profile_id) {
-      return;
-    }
-
-    var promisesQueue = Promise.resolve(null);
-    Object.entries(tests).forEach(([testCategory, testCases]) => {
-      testCases.forEach((testCase) => {
-        promisesQueue = promisesQueue.then(() => {
-          return new Promise((resolve, reject) => {
-            fetch(
-              brouter_request_url(
-                testCase.start_point,
-                testCase.end_point,
-                test_profile_id
-              ),
-              {
-                mode: "cors",
-              }
-            )
-              .then((response) => response.json())
-              .then((geojson) => {
-                testCase.expected = geojson;
-                fetch(
-                  brouter_request_url(
-                    testCase.start_point,
-                    testCase.end_point,
-                    reference_profile
-                  ),
-                  {
-                    mode: "cors",
-                  }
-                )
-                  .then((response) => response.json())
-                  .then((geojson) => {
-                    testCase.actual = geojson;
-                    resolve(null);
-                  });
-              })
-              .catch((error) => {
-                errorMessage = "see test results below.";
-                testCase.errorMsg = error;
-                reject(null);
-              });
-          });
-        });
-      });
-    });
-    promisesQueue
-      .then(
-        () => (statusMessage = "All tests done, see individual results below!")
-      )
-      .catch((error) => {
-        statusMessage = "";
-        errorMessage = error;
-      })
-      .then(() => (tests = tests));
   }
 
   function mapAction(container, testCase) {
@@ -162,13 +83,13 @@
     }
     return {
       update: () => {
-        if (testCase.expected) {
-          L.geoJSON(testCase.expected).addTo(map);
+        if (testCase.testResult && testCase.testResult.expected) {
+          L.geoJSON(testCase.testResult.expected.geoJSON).addTo(map);
         }
-        if (testCase.actual) {
-          L.geoJson(testCase.actual, { style: { color: "#666666" } }).addTo(
-            map
-          );
+        if (testCase.testResult && testCase.testResult.actual) {
+          L.geoJson(testCase.testResult.actual.geoJSON, {
+            style: { color: "#666666" },
+          }).addTo(map);
         }
       },
       destroy: () => {
@@ -252,51 +173,40 @@
       </div>
       <div class="col-lg-4">
         <h2>Tests</h2>
-        {#each Object.entries(tests) as [testCategory, testCases]}
-          <div class="summary">
-            <h3>
-              <a href="#{getTestCategoryId(testCategory)}">{testCategory}</a>
-            </h3>
-            <ul>
-              {#each testCases as testCase, testCaseIndex}
-                <li>
-                  <a href="#{getTestCategoryId(testCategory) + testCaseIndex}"
-                    >{testCase.description}</a
-                  >
-                </li>
-              {/each}
-            </ul>
-          </div>
-        {/each}
+        <div class="summary">
+          <ul>
+            {#each testSuite as testCase, testCaseIndex}
+              <li>
+                <a href={"#testcase-" + testCaseIndex}>{testCase.description}</a
+                >
+              </li>
+            {/each}
+          </ul>
+        </div>
       </div>
       <div class="col-lg-4">
         <h2>Results</h2>
-        {#each Object.entries(tests) as [testCategory, testCases]}
-          <h3 id={getTestCategoryId(testCategory)}>{testCategory}</h3>
-          {#each testCases as testCase, testCaseIndex}
-            <div class="testcase">
-              <p
-                class="description"
-                id={getTestCategoryId(testCategory) + testCaseIndex}
-              >
-                {testCase.description}
+
+        {#each testSuite as testCase, testCaseIndex}
+          <div class="testcase">
+            <p class="description" id={"testcase-" + testCaseIndex}>
+              {testCase.description}
+            </p>
+            {#if testCase.testResult && testCase.testResult.error && testCase.testResult.error()}
+              <p class="error">ERROR: {testCase.testResult.error()}</p>
+            {/if}
+            <div class="map" use:mapAction={testCase} />
+            <div class="footer">
+              <p class="debug">
+                <a href={brouterWebDebugUrl(testCase)} target="_blank"
+                  >Debug this test case</a
+                >
               </p>
-              {#if testCase.errorMsg}
-                <p class="error">ERROR: {testCase.errorMsg}</p>
-              {/if}
-              <div class="map" use:mapAction={testCase} />
-              <div class="footer">
-                <p class="debug">
-                  <a href={brouter_web_debug_url(testCase)} target="_blank"
-                    >Debug this test case</a
-                  >
-                </p>
-                <p class="back-top">
-                  <a href="#brouter-tester">Back to top ↑</a>
-                </p>
-              </div>
+              <p class="back-top">
+                <a href="#brouter-tester">Back to top ↑</a>
+              </p>
             </div>
-          {/each}
+          </div>
         {/each}
       </div>
     </div>
@@ -324,5 +234,10 @@
   .back-top {
     flex: auto;
     text-align: right;
+  }
+
+  .error {
+    font-weight: bold;
+    color: red;
   }
 </style>
