@@ -148,8 +148,10 @@
             <label for="profile" class="form-label">Profile content</label>
             <textarea
               class="form-control"
+              rows="20"
               bind:value={test_profile}
             />
+            <div class="form-text">Enter profile code or profile name</div>
           </div>
           <div class="mb-3">
             <label for="reference-profile">Reference profile: </label>
