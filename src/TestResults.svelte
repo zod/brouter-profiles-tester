@@ -25,10 +25,12 @@
     );
   }
 
-  function mapAction(container, testCase) {
+  function mapAction(node, testCase) {
     let startPoint = testCase.start_point;
     let endPoint = testCase.end_point;
-    let map = L.map(container);
+
+    let map = L.map(node);
+
     L.tileLayer(tileUrl, {
       attribution:
         '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -48,18 +50,29 @@
         )
       )
     );
+
+    let layerHuman = L.geoJSON(null, { style: { color: "#5CA423" } }).addTo(
+      map
+    );
     if (testCase.human) {
-      L.geoJSON(testCase.human, { style: { color: "#5CA423" } }).addTo(map);
+      layerHuman.clearLayers();
+      layerHuman.addData(testCase.human);
     }
+
+    let layerExpected = L.geoJSON(null).addTo(map);
+    let layerActual = L.geoJSON(null, {
+      style: { color: "#666666" },
+    }).addTo(map);
+
     return {
       update: () => {
         if (testCase.testResult?.expected) {
-          L.geoJSON(testCase.testResult.expected.geoJSON).addTo(map);
+          layerExpected.clearLayers();
+          layerExpected.addData(testCase.testResult.expected.geoJSON);
         }
         if (testCase.testResult?.actual) {
-          L.geoJson(testCase.testResult.actual.geoJSON, {
-            style: { color: "#666666" },
-          }).addTo(map);
+          layerActual.clearLayers();
+          layerActual.addData(testCase.testResult.actual.geoJSON);
         }
       },
       destroy: () => {
