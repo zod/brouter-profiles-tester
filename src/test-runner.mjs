@@ -100,11 +100,10 @@ async function runTest(testConfig, testCase) {
       route_request_actual,
     ]);
     testCase.testResult = new TestResult(route_expected, route_actual);
-    return testCase;
   } catch (error) {
     testCase.error = error.message;
-    return testCase;
   }
+  return testCase;
 }
 
 async function runTestSuite(testSuite, testConfig) {

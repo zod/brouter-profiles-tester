@@ -122,10 +122,10 @@
     }
     return {
       update: () => {
-        if (testCase.testResult && testCase.testResult.expected) {
+        if (testCase.testResult?.expected) {
           L.geoJSON(testCase.testResult.expected.geoJSON).addTo(map);
         }
-        if (testCase.testResult && testCase.testResult.actual) {
+        if (testCase.testResult?.actual) {
           L.geoJson(testCase.testResult.actual.geoJSON, {
             style: { color: "#666666" },
           }).addTo(map);
@@ -229,10 +229,10 @@
           <ul class="list-unstyled">
             {#each testSuite as testCase, testCaseIndex}
               <li>
-                {#if testCase.testResult && testCase.testResult.ok()}<i
+                {#if testCase.testResult?.ok()}<i
                     class="bi bi-check-circle-fill text-success"
                   />
-                {:else if testCase.testResult && !testCase.testResult.ok()}<i
+                {:else if testCase.testResult?.ok() == false}<i
                     class="bi bi-exclamation-circle-fill text-danger"
                   />
                 {:else}<i class="bi bi-question-circle-fill" />
@@ -245,13 +245,12 @@
       </div>
       <div class="col-lg-4">
         <h2>Results</h2>
-
         {#each testSuite as testCase, testCaseIndex}
           <div class="testcase">
             <p class="description" id={"testcase-" + testCaseIndex}>
               {testCase.description}
             </p>
-            {#if testCase.testResult && testCase.testResult.error && testCase.testResult.error()}
+            {#if testCase.testResult?.error()}
               <p class="error">ERROR: {testCase.testResult.error()}</p>
             {/if}
             <div class="map" use:mapAction={testCase} />
