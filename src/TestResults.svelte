@@ -1,0 +1,113 @@
+<script>
+  import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
+
+  export let testSuite;
+  export let brouterWebUrl;
+  export let referenceProfile;
+  export let tileUrl;
+
+  function brouterWebDebugUrl(brouterWebUrl, testCase) {
+    return (
+      brouterWebUrl +
+      "/#map=15/" +
+      testCase.start_point[1] +
+      "/" +
+      testCase.start_point[0] +
+      "/osm&" +
+      "lonlats=" +
+      testCase.start_point.join(",") +
+      "|" +
+      testCase.end_point.join(",") +
+      "&" +
+      "profile=" +
+      referenceProfile
+    );
+  }
+
+  function mapAction(container, testCase) {
+    let startPoint = testCase.start_point;
+    let endPoint = testCase.end_point;
+    let map = L.map(container);
+    L.tileLayer(tileUrl, {
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      minZoom: 0,
+      maxZoom: 20,
+      subdomains: "abcd",
+    }).addTo(map);
+    map.fitBounds(
+      L.latLngBounds(
+        L.latLng(
+          Math.min(startPoint[1], endPoint[1]),
+          Math.min(startPoint[0], endPoint[0])
+        ),
+        L.latLng(
+          Math.max(startPoint[1], endPoint[1]),
+          Math.max(startPoint[0], endPoint[0])
+        )
+      )
+    );
+    if (testCase.human) {
+      L.geoJSON(testCase.human, { style: { color: "#5CA423" } }).addTo(map);
+    }
+    return {
+      update: () => {
+        if (testCase.testResult?.expected) {
+          L.geoJSON(testCase.testResult.expected.geoJSON).addTo(map);
+        }
+        if (testCase.testResult?.actual) {
+          L.geoJson(testCase.testResult.actual.geoJSON, {
+            style: { color: "#666666" },
+          }).addTo(map);
+        }
+      },
+      destroy: () => {
+        map.remove();
+      },
+    };
+  }
+</script>
+
+{#each testSuite as testCase, testCaseIndex}
+  <div class="testcase">
+    <p class="description" id={"testcase-" + testCaseIndex}>
+      {testCase.description}
+    </p>
+    {#if testCase.testResult?.error()}
+      <p class="error">ERROR: {testCase.testResult.error()}</p>
+    {/if}
+    <div class="map" use:mapAction={testCase} />
+    <div class="footer">
+      <p class="debug">
+        <a href={brouterWebDebugUrl(brouterWebUrl, testCase)} target="_blank"
+          >Debug this test case</a
+        >
+      </p>
+      <p class="back-top">
+        <a href="#brouter-tester">Back to top ↑</a>
+      </p>
+    </div>
+  </div>
+{/each}
+
+<style>
+  .map {
+    height: 300px;
+  }
+
+  .footer {
+    font-size: 0.8em;
+    display: flex;
+  }
+
+  .back-top {
+    flex: auto;
+    text-align: right;
+  }
+
+  .debug {
+    flex: auto;
+    text-align: left;
+  }
+</style>
