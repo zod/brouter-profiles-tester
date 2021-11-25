@@ -7,6 +7,7 @@
   import "leaflet/dist/leaflet.css";
   import "bootstrap";
   import "bootstrap/dist/css/bootstrap.min.css";
+  import "bootstrap-icons/font/bootstrap-icons.css";
 
   let test_profile = "";
   let reference_profile = "trekking";
@@ -225,11 +226,18 @@
           >
         </div>
         <div class="summary">
-          <ul>
+          <ul class="list-unstyled">
             {#each testSuite as testCase, testCaseIndex}
               <li>
-                <a href={"#testcase-" + testCaseIndex}>{testCase.description}</a
-                >
+                {#if testCase.testResult && testCase.testResult.ok()}<i
+                    class="bi bi-check-circle-fill text-success"
+                  />
+                {:else if testCase.testResult && !testCase.testResult.ok()}<i
+                    class="bi bi-exclamation-circle-fill text-danger"
+                  />
+                {:else}<i class="bi bi-question-circle-fill" />
+                {/if}
+                {testCase.description}
               </li>
             {/each}
           </ul>
