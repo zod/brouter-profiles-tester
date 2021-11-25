@@ -11,7 +11,7 @@
 
   let test_profile = "";
   let reference_profile = "trekking";
-  let brouter_url = "http://brouter.de:7777";
+  let brouter_url = "https://brouter.de";
   let brouter_web_url = "http://brouter.de/brouter-web/";
   let tile_url =
     "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png";
