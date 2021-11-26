@@ -105,6 +105,24 @@
         {#if statusMessage}
           <p id="status">{statusMessage}</p>
         {/if}
+        <h2>Instructions</h2>
+        <p>To add a new test follow these steps</p>
+        <ul>
+          <li>
+            Use <a href={brouterWebUrl}>brouter-web</a> to find create a route which
+            shows bad routing behaviour when using just two points.
+          </li>
+          <li>
+            Manually improve the routing in brouter-web by adding more points
+            and export the result as GeoJSON. Try to use a sensible name because
+            it is used as test description.
+          </li>
+          <li>Improve profile code using brouter-web to test your changes.</li>
+          <li>
+            Import your test to brouter-profiles-tester and run the tests to see
+            if your profile changes affect other tests.
+          </li>
+        </ul>
       </Col>
       <Col lg="4">
         <h2>Tests</h2>
