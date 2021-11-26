@@ -6,9 +6,14 @@
   import TestSettings from "./TestSettings.svelte";
 
   import _ from "lodash";
-  import "bootstrap";
-  import "bootstrap/dist/css/bootstrap.min.css";
-  import "bootstrap-icons/font/bootstrap-icons.css";
+  import {
+    Button,
+    ButtonGroup,
+    Col,
+    Container,
+    Row,
+    Styles,
+  } from "sveltestrap";
 
   let testProfile = "";
   let referenceProfile = "trekking";
@@ -78,11 +83,14 @@
   }
 </script>
 
+<!-- svetestrap styles -->
+<Styles />
+
 <main>
-  <div class="container-fluid">
+  <Container fluid>
     <h1 id="brouter-tester" class="display-1">BRouter profiles tester</h1>
-    <div class="row">
-      <div class="col-lg-4">
+    <Row>
+      <Col lg="4">
         <h2>Settings</h2>
         <TestSettings
           bind:testProfile
@@ -97,19 +105,15 @@
         {#if statusMessage}
           <p id="status">{statusMessage}</p>
         {/if}
-      </div>
-      <div class="col-lg-4">
+      </Col>
+      <Col lg="4">
         <h2>Tests</h2>
-        <div class="btn-group" role="toolbar" aria-label="Test actions">
-          <button type="button" class="btn btn-primary" on:click={runTests}
-            >Run</button
-          >
-          <button
-            type="button"
-            class="btn btn-secondary"
+        <ButtonGroup role="toolbar" aria-label="Test actions">
+          <Button color="primary" on:click={runTests}>Run</Button>
+          <Button
             on:click={() => {
               fileInput.click();
-            }}>Import</button
+            }}>Import</Button
           >
           <input
             bind:this={fileInput}
@@ -126,10 +130,8 @@
             download="tests.json"
             on:click={exportTests}>Export</a
           >
-          <button type="button" class="btn btn-secondary" on:click={resetTests}
-            >Reset</button
-          >
-        </div>
+          <Button secondary on:click={resetTests}>Reset</Button>
+        </ButtonGroup>
         <div class="summary">
           <ul class="list-unstyled">
             {#each testSuite as testCase, testCaseIndex}
@@ -147,13 +149,13 @@
             {/each}
           </ul>
         </div>
-      </div>
-      <div class="col-lg-4">
+      </Col>
+      <Col lg="4">
         <h2>Results</h2>
         <TestResults {testSuite} {brouterWebUrl} {referenceProfile} {tileUrl} />
-      </div>
-    </div>
-  </div>
+      </Col>
+    </Row>
+  </Container>
 </main>
 
 <style>
