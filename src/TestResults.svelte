@@ -66,11 +66,11 @@
 
     return {
       update: () => {
-        if (testCase.testResult?.expected) {
+        if (testCase.testResult?.expected?.geoJSON) {
           layerExpected.clearLayers();
           layerExpected.addData(testCase.testResult.expected.geoJSON);
         }
-        if (testCase.testResult?.actual) {
+        if (testCase.testResult?.actual?.geoJSON) {
           layerActual.clearLayers();
           layerActual.addData(testCase.testResult.actual.geoJSON);
         }

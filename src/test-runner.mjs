@@ -32,15 +32,12 @@ class TestResult {
   }
 
   ok() {
-    try {
-      return _.isEqual(
-        this.expected.feature().geometry,
-        this.actual.feature().geometry
-      );
-    } catch (error) {
-      console.error(error);
+    let geometry_expected = this.expected?.feature?.().geometry;
+    let geometry_actual = this.actual?.feature?.().geometry;
+    if (!geometry_actual || !geometry_expected) {
       return false;
     }
+    return _.isEqual(geometry_expected, geometry_actual);
   }
 }
 
