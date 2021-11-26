@@ -144,7 +144,7 @@
                   />
                 {:else}<i class="bi bi-question-circle-fill" />
                 {/if}
-                {testCase.description}
+                <a href="#testcase-{testCaseIndex}">{testCase.description}</a>
               </li>
             {/each}
           </ul>
