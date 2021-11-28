@@ -71,7 +71,6 @@
           end_point: end,
           human: geojson,
         });
-        console.log(testSuite);
         testSuite = testSuite;
       });
     }
@@ -79,7 +78,7 @@
 
   function exportTests(event) {
     event.target.href = URL.createObjectURL(
-      new Blob([JSON.stringify(testSuite, null, 2)], {
+      new Blob([JSON.stringify(testSuite)], {
         type: "application/json",
       })
     );
