@@ -1,6 +1,8 @@
 <script>
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
+  import "leaflet-fullscreen";
+  import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 
   export let testSuite;
   export let brouterWebUrl;
@@ -29,7 +31,11 @@
     let startPoint = testCase.start_point;
     let endPoint = testCase.end_point;
 
-    let map = L.map(node);
+    let map = L.map(node, {
+      fullscreenControl: {
+        pseudoFullscreen: true,
+      },
+    });
 
     L.tileLayer(tileUrl, {
       attribution:
