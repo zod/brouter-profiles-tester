@@ -18,7 +18,12 @@
   </div>
   <div class="mb-3">
     <label for="brouter-url" class="form-label">BRouter URL</label>
-    <input type="text" class="form-control" bind:value={brouterUrl} />
+    <input type="text" class="form-control" list="brouter-urls" bind:value={brouterUrl} />
+    <datalist id="brouter-urls">
+      <option value="https://brouter.de/">brouter.de</option>
+      <option value="http://brouter.de:7777/">brouter.de frozen segments</option>
+      <option value="https://brouter.m11n.de/brouter-engine/">brouter.m11n.de</option>
+    </datalist>
     <div class="form-text">
       Use a BRouter instance which provides HTTPS if this site is served using
       HTTPS
@@ -28,7 +33,11 @@
     <label for="brouter-web-url" class="form-label"
       >BRouter web URL (for debug)</label
     >
-    <input type="text" class="form-control" bind:value={brouterWebUrl} />
+    <input type="text" class="form-control" list="brouter-web-urls" bind:value={brouterWebUrl} />
+    <datalist id="brouter-web-urls">
+      <option value="https://brouter.de/brouter-web/">brouter.de</option>
+      <option value="https://brouter.m11n.de/">brouter.m11n.de</option>
+    </datalist>
   </div>
   <div class="mb-3">
     <label for="tile-url" class="form-label">Tile URL</label>
