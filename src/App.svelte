@@ -12,6 +12,7 @@
     Col,
     Container,
     Row,
+    Spinner,
     Styles,
   } from "sveltestrap";
 
@@ -29,7 +30,10 @@
   let errorMessage = "";
   let statusMessage = "";
 
+  let testsInProgress = false;
+
   function runTests() {
+    testsInProgress = true;
     errorMessage = "";
 
     let testConfig = {
@@ -44,7 +48,10 @@
       .then((testSuiteResult) => {
         testSuite = testSuiteResult;
       })
-      .catch((error) => (errorMessage = error));
+      .catch((error) => (errorMessage = error))
+      .finally(() => {
+        testsInProgress = false;
+      });
   }
 
   function importTests(event) {
@@ -127,7 +134,12 @@
       <Col lg="4">
         <h2>Tests</h2>
         <ButtonGroup role="toolbar" aria-label="Test actions">
-          <Button color="primary" on:click={runTests}>Run</Button>
+          <Button color="primary" on:click={runTests}>
+            {#if testsInProgress}
+              <Spinner type="border" size="sm" />
+            {/if}
+            Run
+          </Button>
           <Button
             on:click={() => {
               fileInput.click();
