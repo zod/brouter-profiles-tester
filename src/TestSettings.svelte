@@ -8,21 +8,29 @@
 
 <form id="settings">
   <div class="mb-3">
-    <label for="profile" class="form-label">Profile content</label>
+    <label for="profile" class="form-label">Profile</label>
     <textarea class="form-control" rows="20" bind:value={testProfile} />
-    <div class="form-text">Enter profile code or profile name</div>
+    <div class="form-text">Enter profile code, name or url</div>
   </div>
   <div class="mb-3">
-    <label for="reference-profile">Reference profile: </label>
+    <label for="reference-profile">Reference profile</label>
     <input type="text" class="form-control" bind:value={referenceProfile} />
   </div>
   <div class="mb-3">
     <label for="brouter-url" class="form-label">BRouter URL</label>
-    <input type="text" class="form-control" list="brouter-urls" bind:value={brouterUrl} />
+    <input
+      type="text"
+      class="form-control"
+      list="brouter-urls"
+      bind:value={brouterUrl}
+    />
     <datalist id="brouter-urls">
       <option value="https://brouter.de/">brouter.de</option>
-      <option value="http://brouter.de:7777/">brouter.de frozen segments</option>
-      <option value="https://brouter.m11n.de/brouter-engine/">brouter.m11n.de</option>
+      <option value="http://brouter.de:7777/">brouter.de frozen segments</option
+      >
+      <option value="https://brouter.m11n.de/brouter-engine/"
+        >brouter.m11n.de</option
+      >
     </datalist>
     <div class="form-text">
       Use a BRouter instance which provides HTTPS if this site is served using
@@ -33,7 +41,12 @@
     <label for="brouter-web-url" class="form-label"
       >BRouter web URL (for debug)</label
     >
-    <input type="text" class="form-control" list="brouter-web-urls" bind:value={brouterWebUrl} />
+    <input
+      type="text"
+      class="form-control"
+      list="brouter-web-urls"
+      bind:value={brouterWebUrl}
+    />
     <datalist id="brouter-web-urls">
       <option value="https://brouter.de/brouter-web/">brouter.de</option>
       <option value="https://brouter.m11n.de/">brouter.m11n.de</option>
@@ -48,5 +61,6 @@
 <style>
   textarea {
     min-height: 300px;
+    font-family: monospace;
   }
 </style>
