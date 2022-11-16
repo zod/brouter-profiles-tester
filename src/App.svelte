@@ -16,14 +16,19 @@
     Styles,
   } from "sveltestrap";
 
-  let testProfile = "";
-  let referenceProfile = "trekking";
+  let urlParams = new URLSearchParams(window.location.search);
+
+  let testProfile = urlParams.get("profile") || "";
+  let referenceProfile = urlParams.get("referenceProfile") || "trekking";
   let brouterUrl = "https://brouter.de";
   let brouterWebUrl = "http://brouter.de/brouter-web/";
   let tileUrl =
     "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png";
 
   let testSuite = _.cloneDeep(TESTS);
+  if (urlParams.has("testsuite")) {
+    fetch(urlParams.get("testsuite")).then((response) => response.json()).then((data) => testSuite = data);
+  }
 
   let fileInput;
 
