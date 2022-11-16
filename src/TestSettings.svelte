@@ -26,10 +26,8 @@
     />
     <datalist id="brouter-urls">
       <option value="https://brouter.de/">brouter.de</option>
-      <option value="http://brouter.de:7777/">brouter.de frozen segments</option
-      >
-      <option value="https://brouter.m11n.de/brouter-engine/"
-        >brouter.m11n.de</option
+      <option value="https://bikerouter.de/brouter-engine/"
+        >bikerouter.de</option
       >
     </datalist>
     <div class="form-text">
@@ -49,7 +47,7 @@
     />
     <datalist id="brouter-web-urls">
       <option value="https://brouter.de/brouter-web/">brouter.de</option>
-      <option value="https://brouter.m11n.de/">brouter.m11n.de</option>
+      <option value="https://bikerouter.de/">bikerouter.de</option>
     </datalist>
   </div>
   <div class="mb-3">
