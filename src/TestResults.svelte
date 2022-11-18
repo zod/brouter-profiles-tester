@@ -57,17 +57,19 @@
       )
     );
 
-    let layerHuman = L.geoJSON(null, { style: { color: "#5CA423" } }).addTo(
-      map
-    );
+    let layerHuman = L.geoJSON(null, {
+      style: { color: "#91cf60" },
+    }).addTo(map);
     if (testCase.human) {
       layerHuman.clearLayers();
       layerHuman.addData(testCase.human);
     }
 
-    let layerExpected = L.geoJSON(null).addTo(map);
+    let layerExpected = L.geoJSON(null, {
+      style: { color: "#ffffbf" },
+    }).addTo(map);
     let layerActual = L.geoJSON(null, {
-      style: { color: "#666666" },
+      style: { color: "#fc8d59" },
     }).addTo(map);
 
     return {
