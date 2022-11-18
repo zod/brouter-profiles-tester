@@ -184,7 +184,8 @@
             type="button"
             class="btn btn-secondary"
             download="tests.json"
-            on:click={exportTests}>Export</a
+            on:click={exportTests}
+            on:keypress={exportTests}>Export</a
           >
           <Button secondary on:click={resetTests}>Reset</Button>
         </ButtonGroup>
