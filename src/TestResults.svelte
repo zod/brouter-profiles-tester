@@ -6,7 +6,7 @@
 
   export let testSuite;
   export let brouterWebUrl;
-  export let referenceProfile;
+  export let testProfile;
   export let tileUrl;
 
   function brouterWebDebugUrl(brouterWebUrl, testCase) {
@@ -23,7 +23,7 @@
       testCase.end_point.join(",") +
       "&" +
       "profile=" +
-      referenceProfile
+      testProfile.name
     );
   }
 

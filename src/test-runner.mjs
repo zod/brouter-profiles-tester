@@ -65,35 +65,6 @@ async function requestRoute(brouterUri, startPoint, endPoint, profile) {
   }
 }
 
-async function prepareProfile(brouterUri, profileNameOrData) {
-  if (profileNameOrData.startsWith("http")) {
-    const response = await fetch(profileNameOrData, { mode: "cors"});
-    profileNameOrData = await response.text();
-  }
-  // If profile contain spaces treat them as profile content
-  if (profileNameOrData.indexOf(" ") >= 0) {
-    return await uploadProfile(
-      brouterUri,
-      profileNameOrData
-    );
-  }
-  return profileNameOrData;
-}
-
-async function uploadProfile(brouterUri, profileData) {
-  const requestUri = brouterUri + "/brouter/profile";
-  const response = await fetch(requestUri, {
-    method: "POST",
-    mode: "cors",
-    body: profileData,
-  });
-  const responseJson = await response.json();
-  if (responseJson["error"]) {
-    throw responseJson["error"];
-  }
-  return responseJson["profileid"];
-}
-
 async function runTest(testConfig, testCase) {
   function requestRouteTest(profile) {
     return requestRoute(
@@ -119,16 +90,6 @@ async function runTest(testConfig, testCase) {
 }
 
 async function runTestSuite(testSuite, testConfig) {
-  testConfig.profiles.expected = await prepareProfile(
-    testConfig.brouterUri,
-    testConfig.profiles.expected
-  );
-
-  testConfig.profiles.actual = await prepareProfile(
-    testConfig.brouterUri,
-    testConfig.profiles.actual
-  );
-
   const runQueue = new RunQueue();
   testSuite.forEach((testCase) => {
     runQueue.add(runTest, [testConfig, testCase]);

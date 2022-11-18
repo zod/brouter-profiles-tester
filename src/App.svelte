@@ -16,18 +16,37 @@
     Styles,
   } from "sveltestrap";
 
-  let urlParams = new URLSearchParams(window.location.search);
+  function parseProfileParam(paramValue, profile, defaultValue) {
+    if (paramValue?.startsWith("http")) {
+      profile.url = paramValue;
+    } else {
+      profile.name = paramValue || defaultValue;
+    }
+  }
 
-  let testProfile = urlParams.get("profile") || "";
-  let referenceProfile = urlParams.get("referenceProfile") || "trekking";
+  let testSettings = {};
+  let testProfile = {};
+  let referenceProfile = {};
   let brouterUrl = "https://brouter.de";
-  let brouterWebUrl = "http://brouter.de/brouter-web/";
+  let brouterWebUrl = "https://brouter.de/brouter-web";
   let tileUrl =
     "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png";
 
   let testSuite = _.cloneDeep(TESTS);
+
+  let urlParams = new URLSearchParams(window.location.search);
+
+  parseProfileParam(urlParams.get("testProfile"), testProfile);
+  parseProfileParam(
+    urlParams.get("referenceProfile"),
+    referenceProfile,
+    "trekking"
+  );
+
   if (urlParams.has("testsuite")) {
-    fetch(urlParams.get("testsuite")).then((response) => response.json()).then((data) => testSuite = data);
+    fetch(urlParams.get("testsuite"))
+      .then((response) => response.json())
+      .then((data) => (testSuite = data));
   }
 
   let fileInput;
@@ -37,15 +56,17 @@
 
   let testsInProgress = false;
 
-  function runTests() {
+  async function runTests() {
     testsInProgress = true;
     errorMessage = "";
+
+    await testSettings.uploadProfiles();
 
     let testConfig = {
       brouterUri: brouterUrl,
       profiles: {
-        expected: referenceProfile,
-        actual: testProfile,
+        expected: referenceProfile.name,
+        actual: testProfile.name,
       },
     };
 
@@ -109,6 +130,7 @@
           bind:brouterUrl
           bind:brouterWebUrl
           bind:tileUrl
+          bind:this={testSettings}
         />
         {#if errorMessage}
           <p class="error" id="error">ERROR: {errorMessage}</p>
@@ -186,7 +208,7 @@
       </Col>
       <Col lg="4">
         <h2>Results</h2>
-        <TestResults {testSuite} {brouterWebUrl} {referenceProfile} {tileUrl} />
+        <TestResults {testSuite} {brouterWebUrl} {testProfile} {tileUrl} />
       </Col>
     </Row>
   </Container>
