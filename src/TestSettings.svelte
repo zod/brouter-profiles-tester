@@ -93,7 +93,8 @@
       <InputGroup>
         <Input
           type="textarea"
-          class="form-control form-control-sm"
+          class="form-control-sm"
+          style="font-family: monospace"
           rows="20"
           bind:invalid={errors.testProfile.code}
           bind:feedback={errors.testProfile.code}
@@ -131,9 +132,8 @@
     <AccordionItem header="Reference Profile" active>
       <label for="reference-profile-name">Name</label>
       <FormGroup>
-        <input
+        <Input
           type="text"
-          class="form-control"
           id="reference-profile-name"
           bind:value={referenceProfile.name}
         />
@@ -144,23 +144,34 @@
 
       <label for="reference-profile-code">Code</label>
       <FormGroup>
-        <textarea
-          class="form-control form-control-sm"
+        <Input
+          type="textarea"
+          class="form-control-sm"
+          style="font-family: monospace"
           rows="20"
+          bind:invalid={errors.referenceProfile.code}
+          bind:feedback={errors.referenceProfile.code}
           bind:value={referenceProfile.code}
         />
       </FormGroup>
 
       <label for="reference-profile-url">URL</label>
       <InputGroup>
-        <Input type="text" bind:value={referenceProfile.url} />
+        <Input
+          type="text"
+          bind:invalid={errors.referenceProfile.url}
+          bind:feedback={errors.referenceProfile.url}
+          bind:value={referenceProfile.url}
+        />
         <Button
           outline
           secondary
-          on:click={() =>
-            downloadProfile(referenceProfile).then(
-              () => (referenceProfile = referenceProfile)
-            )}
+          on:click={() => {
+            errors.referenceProfile.url = "";
+            downloadProfile(referenceProfile)
+              .then(() => (referenceProfile = referenceProfile))
+              .catch((err) => (errors.referenceProfile.url = err));
+          }}
         >
           Get
         </Button>
@@ -201,8 +212,4 @@
 </Form>
 
 <style>
-  textarea {
-    min-height: 300px;
-    font-family: monospace;
-  }
 </style>
