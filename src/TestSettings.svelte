@@ -18,25 +18,44 @@
   export let testProfile;
   export let referenceProfile;
 
+  let errors = {
+    testProfile: {},
+    referenceProfile: {},
+  };
+
   export async function uploadProfiles() {
-    await uploadProfile(testProfile);
-    await uploadProfile(referenceProfile);
+    await uploadProfile(testProfile, errors.testProfile);
+    await uploadProfile(referenceProfile, errors.referenceProfile);
     testProfile = testProfile;
     referenceProfile = referenceProfile;
+    errors = errors;
   }
 
-  async function uploadProfile(profile) {
+  async function uploadProfile(profile, errorResult) {
     if (!profile.name || profile.name?.startsWith("custom_")) {
-      if (!profile.code) {
+      if (!profile.code && profile.url) {
         await downloadProfile(profile);
       }
-      profile.name = await uploadProfileContent(profile.code, profile.name);
+      if (profile.code) {
+        await uploadProfileContent(profile.code, profile.name)
+          .then((name) => (profile.name = name))
+          .catch((err) => {
+            errorResult.code = err;
+            throw err;
+          });
+      }
     }
   }
 
   async function downloadProfile(profile) {
-    const response = await fetch(profile.url, { mode: "cors" });
-    await response.text().then((code) => (profile.code = code));
+    return fetch(profile.url, { mode: "cors" })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP status ${response.status}`);
+        }
+        return response.text();
+      })
+      .then((code) => (profile.code = code));
   }
 
   async function uploadProfileContent(profileData, profileId) {
@@ -49,8 +68,7 @@
     });
     const responseJson = await response.json();
     if (responseJson["error"]) {
-      // Should show as invalid in code field
-      throw responseJson["error"];
+      throw new Error(responseJson["error"]);
     }
     return responseJson["profileid"];
   }
@@ -73,24 +91,34 @@
 
       <label for="test-profile-code">Code</label>
       <InputGroup>
-        <textarea
+        <Input
+          type="textarea"
           class="form-control form-control-sm"
           rows="20"
+          bind:invalid={errors.testProfile.code}
+          bind:feedback={errors.testProfile.code}
           bind:value={testProfile.code}
         />
       </InputGroup>
 
       <label for="test-profile-url">URL</label>
       <InputGroup>
-        <Input type="text" bind:value={testProfile.url} />
+        <Input
+          type="text"
+          bind:invalid={errors.testProfile.url}
+          bind:feedback={errors.testProfile.url}
+          bind:value={testProfile.url}
+        />
         <Button
           outline
           secondary
           id="test-profile-download"
-          on:click={() =>
-            downloadProfile(testProfile).then(
-              () => (testProfile = testProfile)
-            )}
+          on:click={() => {
+            errors.testProfile.url = "";
+            downloadProfile(testProfile)
+              .then(() => (testProfile = testProfile))
+              .catch((err) => (errors.testProfile.url = err));
+          }}
         >
           Get
         </Button>

@@ -57,27 +57,30 @@
   let testsInProgress = false;
 
   async function runTests() {
-    testsInProgress = true;
-    errorMessage = "";
+    try {
+      testsInProgress = true;
+      errorMessage = "";
 
-    await testSettings.uploadProfiles();
+      await testSettings.uploadProfiles();
 
-    let testConfig = {
-      brouterUri: brouterUrl,
-      profiles: {
-        expected: referenceProfile.name,
-        actual: testProfile.name,
-      },
-    };
+      if (testProfile.name && referenceProfile.name) {
+        let testConfig = {
+          brouterUri: brouterUrl,
+          profiles: {
+            expected: referenceProfile.name,
+            actual: testProfile.name,
+          },
+        };
 
-    runTestSuite(testSuite, testConfig)
-      .then((testSuiteResult) => {
-        testSuite = testSuiteResult;
-      })
-      .catch((error) => (errorMessage = error))
-      .finally(() => {
-        testsInProgress = false;
-      });
+        await runTestSuite(testSuite, testConfig)
+          .then((testSuiteResult) => {
+            testSuite = testSuiteResult;
+          })
+          .catch((error) => (errorMessage = error));
+      }
+    } finally {
+      testsInProgress = false;
+    }
   }
 
   function importTests(event) {

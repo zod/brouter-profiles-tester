@@ -101,9 +101,9 @@
     <div class="map" use:mapAction={testCase} />
     <div class="footer">
       <p class="debug">
-        <a href={brouterWebDebugUrl(brouterWebUrl, testCase)} target="_blank"
-          >Debug this test case</a
-        >
+        <a href={brouterWebDebugUrl(brouterWebUrl, testCase)} target="_blank">
+          Debug this test case
+        </a>
       </p>
       <p class="back-top">
         <a href="#brouter-tester">Back to top ↑</a>
